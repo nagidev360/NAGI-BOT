@@ -1,0 +1,10 @@
+import { Client, GatewayIntentBits, Partials, Events } from 'discord.js';
+const token=process.env.DISCORD_BOT_TOKEN;
+if(!token) throw new Error('DISCORD_BOT_TOKEN is required');
+const client=new Client({intents:[GatewayIntentBits.Guilds,GatewayIntentBits.GuildMembers,GatewayIntentBits.GuildMessages,GatewayIntentBits.MessageContent],partials:[Partials.Channel]});
+client.once(Events.ClientReady,c=>console.log(`[NAGI BOT] online as ${c.user.tag} in ${c.guilds.cache.size} guilds`));
+client.on(Events.GuildCreate,g=>console.log(`[guild+] ${g.name} ${g.id}`));
+client.on(Events.GuildDelete,g=>console.log(`[guild-] ${g.name} ${g.id}`));
+client.on(Events.InteractionCreate,async interaction=>{if(!interaction.isChatInputCommand())return;if(interaction.commandName==='ping')await interaction.reply({content:`Pong! ${client.ws.ping}ms`,ephemeral:true});});
+process.once('SIGINT',()=>client.destroy());process.once('SIGTERM',()=>client.destroy());
+client.login(token);
